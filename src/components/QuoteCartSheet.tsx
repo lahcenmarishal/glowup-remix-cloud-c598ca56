@@ -53,8 +53,8 @@ const QuoteCartSheet = () => {
               </div>
             </div>
             <div className="border-t border-border pt-4">
-              <Button onClick={handleValidate} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                Demander un devis ({itemCount} article{itemCount > 1 ? "s" : ""})
+          <Button onClick={handleValidate} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                <FileText className="h-4 w-4 mr-2" /> Voir le devis
               </Button>
             </div>
           </>

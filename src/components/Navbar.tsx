@@ -167,7 +167,7 @@ const Navbar = () => {
               </div>
             )}
           </div>
-          <button onClick={() => setIsOpen(true)} className="relative flex items-center gap-2 rounded-sm border border-background/20 bg-background/10 px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-background/20">
+          <button onClick={() => setIsOpen(true)} className="relative flex items-center gap-2 rounded-sm bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90">
             <FileText className="h-4 w-4" /> Devis
             {itemCount > 0 && <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">{itemCount}</span>}
           </button>
