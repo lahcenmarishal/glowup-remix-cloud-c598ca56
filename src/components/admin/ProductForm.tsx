@@ -1,0 +1,332 @@
+import { useState, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { ArrowLeft, Upload, X, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+interface Spec { label: string; value: string; }
+interface WarrantyItem { component: string; duration: string; }
+interface GalleryImage { id?: string; image_url: string; alt_text: string; sort_order: number; isNew?: boolean; }
+
+const categories = ["Cardio", "Musculation", "Fonctionnel"];
+const usageTypes = [
+  { value: "both", label: "Professionnel & Résidentiel" },
+  { value: "professionnel", label: "Professionnel uniquement" },
+  { value: "residentiel", label: "Résidentiel uniquement" },
+];
+
+const subcategories: Record<string, string[]> = {
+  Cardio: ["Tapis de course", "Elliptiques", "Climbmills", "Steppers", "Vélos", "Rameurs"],
+  Musculation: ["Multi-stations", "Mono-stations", "Charges Libres", "Charges Guidées"],
+  Fonctionnel: ["HIIT Cardio", "Cages & Rigs"],
+};
+
+const ProductForm = ({ product, onClose }: { product: any | null; onClose: () => void }) => {
+  const qc = useQueryClient();
+  const isEditing = !!product;
+
+  const [name, setName] = useState(product?.name || "");
+  const [category, setCategory] = useState(product?.category || "Cardio");
+  const [usageType, setUsageType] = useState(product?.usage_type || "both");
+  const [subcategory, setSubcategory] = useState(product?.subcategory || "");
+  const [shortDesc, setShortDesc] = useState(product?.short_description || "");
+  const [description, setDescription] = useState(product?.description || "");
+  const [warrantyItems, setWarrantyItems] = useState<WarrantyItem[]>(() => {
+    const w = product?.warranty;
+    if (!w) return [];
+    try {
+      const parsed = JSON.parse(w);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item: any) => ({
+          component: item.component || item.part || "",
+          duration: item.duration || "",
+        }));
+      }
+    } catch {}
+    // Legacy: parse "Composant: Durée" lines
+    return w.split("\n").filter((l: string) => l.trim()).map((line: string) => {
+      const parts = line.split(":");
+      return { component: parts[0]?.trim() || "", duration: parts.slice(1).join(":").trim() || line.trim() };
+    });
+  });
+  const [specs, setSpecs] = useState<Spec[]>((product?.specs as Spec[]) || []);
+  const [features, setFeatures] = useState<string[]>((product?.features as string[]) || []);
+  const [imageUrl, setImageUrl] = useState(product?.image_url || "");
+  const [hoverImageUrl, setHoverImageUrl] = useState(product?.hover_image_url || "");
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [isTrending, setIsTrending] = useState(product?.is_trending || false);
+  const [isPublished, setIsPublished] = useState(product?.is_published ?? false);
+  const [sortOrder, setSortOrder] = useState(product?.sort_order || 0);
+  const [saving, setSaving] = useState(false);
+  const [loadingGallery, setLoadingGallery] = useState(isEditing);
+
+  const mainImageRef = useRef<HTMLInputElement>(null);
+  const hoverImageRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  if (isEditing && loadingGallery) {
+    supabase.from("product_images").select("*").eq("product_id", product.id).order("sort_order")
+      .then(({ data }) => {
+        if (data) setGalleryImages(data.map((d) => ({ ...d, alt_text: d.alt_text || "" })));
+        setLoadingGallery(false);
+      });
+  }
+
+  const uploadImage = async (file: File, folder: string): Promise<string> => {
+    const ext = file.name.split(".").pop();
+    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from("product-images").upload(path, file);
+    if (error) throw error;
+    return supabase.storage.from("product-images").getPublicUrl(path).data.publicUrl;
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void, folder: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try { setter(await uploadImage(file, folder)); toast.success("Image uploadée"); } catch { toast.error("Erreur lors de l'upload"); }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    for (const file of Array.from(files)) {
+      try {
+        const url = await uploadImage(file, "gallery");
+        setGalleryImages((prev) => [...prev, { image_url: url, alt_text: "", sort_order: prev.length, isNew: true }]);
+      } catch { toast.error(`Erreur upload: ${file.name}`); }
+    }
+    toast.success("Images ajoutées");
+  };
+
+  const removeGalleryImage = (index: number) => setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  const addSpec = () => setSpecs((prev) => [...prev, { label: "", value: "" }]);
+  const removeSpec = (i: number) => setSpecs((prev) => prev.filter((_, idx) => idx !== i));
+  const updateSpec = (i: number, field: keyof Spec, val: string) => setSpecs((prev) => prev.map((s, idx) => (idx === i ? { ...s, [field]: val } : s)));
+  const addFeature = () => setFeatures((prev) => [...prev, ""]);
+  const removeFeature = (i: number) => setFeatures((prev) => prev.filter((_, idx) => idx !== i));
+  const updateFeature = (i: number, val: string) => setFeatures((prev) => prev.map((f, idx) => (idx === i ? val : f)));
+  const addWarrantyItem = () => setWarrantyItems((prev) => [...prev, { component: "", duration: "" }]);
+  const removeWarrantyItem = (i: number) => setWarrantyItems((prev) => prev.filter((_, idx) => idx !== i));
+  const updateWarrantyItem = (i: number, field: keyof WarrantyItem, val: string) => setWarrantyItems((prev) => prev.map((w, idx) => (idx === i ? { ...w, [field]: val } : w)));
+
+  const handleSave = async () => {
+    if (!name.trim()) { toast.error("Le nom est requis"); return; }
+    setSaving(true);
+    try {
+      const productData = {
+        name, category,
+        usage_type: usageType,
+        subcategory: subcategory || null,
+        short_description: shortDesc || null,
+        description: description || null,
+        warranty: warrantyItems.length > 0 ? JSON.stringify(warrantyItems.filter(w => w.component.trim())) : null,
+        specs: specs.filter((s) => s.label.trim()) as any,
+        features: features.filter((f) => f.trim()) as any,
+        image_url: imageUrl || null,
+        hover_image_url: hoverImageUrl || null,
+        is_trending: isTrending,
+        is_published: isPublished,
+        sort_order: sortOrder,
+      };
+
+      let productId = product?.id;
+
+      if (isEditing) {
+        const { error } = await supabase.from("products").update(productData).eq("id", product.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from("products").insert(productData).select("id").single();
+        if (error) throw error;
+        productId = data.id;
+      }
+
+      if (productId) {
+        await supabase.from("product_images").delete().eq("product_id", productId);
+        if (galleryImages.length > 0) {
+          const { error } = await supabase.from("product_images").insert(
+            galleryImages.map((img, i) => ({ product_id: productId, image_url: img.image_url, alt_text: img.alt_text || null, sort_order: i }))
+          );
+          if (error) throw error;
+        }
+      }
+
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      toast.success(isEditing ? "Produit mis à jour" : "Produit créé");
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || "Erreur");
+    } finally { setSaving(false); }
+  };
+
+  const inputClass = "w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent";
+
+  return (
+    <div className="max-w-3xl">
+      <button onClick={onClose} className="mb-6 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" /> Retour à la liste
+      </button>
+      <h1 className="mb-6 font-display text-2xl font-bold text-foreground">{isEditing ? "Modifier le produit" : "Nouveau produit"}</h1>
+
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Nom *</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder="Nom du produit" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Catégorie</label>
+            <select value={category} onChange={(e) => { setCategory(e.target.value); setSubcategory(""); }} className={inputClass}>
+              {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Type d'usage</label>
+            <select value={usageType} onChange={(e) => setUsageType(e.target.value)} className={inputClass}>
+              {usageTypes.map((u) => <option key={u.value} value={u.value}>{u.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Sous-catégorie</label>
+            <select value={subcategory} onChange={(e) => setSubcategory(e.target.value)} className={inputClass}>
+              <option value="">-- Sélectionner --</option>
+              {(subcategories[category] || []).map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Description courte</label>
+          <textarea value={shortDesc} onChange={(e) => setShortDesc(e.target.value)} rows={2} className={inputClass} placeholder="Résumé affiché sur la page produit" />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">Description complète</label>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} className={inputClass} placeholder="Description détaillée" />
+        </div>
+
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="text-xs font-medium text-muted-foreground">Garantie</label>
+            <button onClick={addWarrantyItem} className="flex items-center gap-1 text-xs text-accent hover:text-accent/80"><Plus className="h-3 w-3" /> Ajouter</button>
+          </div>
+          <div className="space-y-2">
+            {warrantyItems.map((w, i) => (
+              <div key={i} className="flex gap-2">
+                <input value={w.component} onChange={(e) => updateWarrantyItem(i, "component", e.target.value)} className={`${inputClass} flex-1`} placeholder="Composant (ex: Cadre)" />
+                <input value={w.duration} onChange={(e) => updateWarrantyItem(i, "duration", e.target.value)} className={`${inputClass} flex-1`} placeholder="Durée (ex: 10 ans)" />
+                <button onClick={() => removeWarrantyItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Ordre d'affichage</label>
+            <input type="number" value={sortOrder} onChange={(e) => setSortOrder(Number(e.target.value))} className={`${inputClass} w-24`} />
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer pt-4">
+            <input type="checkbox" checked={isTrending} onChange={(e) => setIsTrending(e.target.checked)} className="h-4 w-4 rounded border-border text-accent focus:ring-accent" />
+            <span className="text-sm font-medium text-foreground">Produit tendance</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer pt-4">
+            <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} className="h-4 w-4 rounded border-border text-accent focus:ring-accent" />
+            <span className="text-sm font-medium text-foreground">Publié</span>
+          </label>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Image principale</label>
+            <input type="file" ref={mainImageRef} className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, setImageUrl, "main")} />
+            {imageUrl ? (
+              <div className="relative">
+                <img src={imageUrl} alt="" className="h-40 w-full rounded-sm object-cover" />
+                <button onClick={() => mainImageRef.current?.click()} className="absolute bottom-2 right-2 rounded-sm bg-background/80 px-2 py-1 text-xs text-foreground backdrop-blur-sm">Changer</button>
+              </div>
+            ) : (
+              <button onClick={() => mainImageRef.current?.click()} className="flex h-40 w-full flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-border text-muted-foreground hover:border-accent hover:text-accent">
+                <Upload className="h-6 w-6" /> <span className="text-xs">Upload</span>
+              </button>
+            )}
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Image hover</label>
+            <input type="file" ref={hoverImageRef} className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, setHoverImageUrl, "hover")} />
+            {hoverImageUrl ? (
+              <div className="relative">
+                <img src={hoverImageUrl} alt="" className="h-40 w-full rounded-sm object-cover" />
+                <button onClick={() => hoverImageRef.current?.click()} className="absolute bottom-2 right-2 rounded-sm bg-background/80 px-2 py-1 text-xs text-foreground backdrop-blur-sm">Changer</button>
+              </div>
+            ) : (
+              <button onClick={() => hoverImageRef.current?.click()} className="flex h-40 w-full flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-border text-muted-foreground hover:border-accent hover:text-accent">
+                <Upload className="h-6 w-6" /> <span className="text-xs">Upload</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="text-xs font-medium text-muted-foreground">Galerie d'images</label>
+            <input type="file" ref={galleryInputRef} className="hidden" accept="image/*" multiple onChange={handleGalleryUpload} />
+            <button onClick={() => galleryInputRef.current?.click()} className="flex items-center gap-1 text-xs text-accent hover:text-accent/80"><Plus className="h-3 w-3" /> Ajouter</button>
+          </div>
+          {galleryImages.length > 0 ? (
+            <div className="grid grid-cols-4 gap-2">
+              {galleryImages.map((img, i) => (
+                <div key={i} className="group relative">
+                  <img src={img.image_url} alt="" className="h-24 w-full rounded-sm object-cover" />
+                  <button onClick={() => removeGalleryImage(i)} className="absolute right-1 top-1 rounded-full bg-background/80 p-1 opacity-0 transition-opacity group-hover:opacity-100"><X className="h-3 w-3 text-destructive" /></button>
+                </div>
+              ))}
+            </div>
+          ) : <p className="text-xs text-muted-foreground">Aucune image dans la galerie.</p>}
+        </div>
+
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="text-xs font-medium text-muted-foreground">Spécifications</label>
+            <button onClick={addSpec} className="flex items-center gap-1 text-xs text-accent hover:text-accent/80"><Plus className="h-3 w-3" /> Ajouter</button>
+          </div>
+          <div className="space-y-2">
+            {specs.map((s, i) => (
+              <div key={i} className="flex gap-2">
+                <input value={s.label} onChange={(e) => updateSpec(i, "label", e.target.value)} className={`${inputClass} flex-1`} placeholder="Label" />
+                <input value={s.value} onChange={(e) => updateSpec(i, "value", e.target.value)} className={`${inputClass} flex-1`} placeholder="Valeur" />
+                <button onClick={() => removeSpec(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="text-xs font-medium text-muted-foreground">Caractéristiques</label>
+            <button onClick={addFeature} className="flex items-center gap-1 text-xs text-accent hover:text-accent/80"><Plus className="h-3 w-3" /> Ajouter</button>
+          </div>
+          <div className="space-y-2">
+            {features.map((f, i) => (
+              <div key={i} className="flex gap-2">
+                <input value={f} onChange={(e) => updateFeature(i, e.target.value)} className={`${inputClass} flex-1`} placeholder="Ex: Résistance magnétique 24 niveaux" />
+                <button onClick={() => removeFeature(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <button onClick={handleSave} disabled={saving} className="rounded-sm bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:bg-accent/90 disabled:opacity-50">
+            {saving ? "Enregistrement..." : isEditing ? "Mettre à jour" : "Créer le produit"}
+          </button>
+          <button onClick={onClose} className="rounded-sm border border-border px-6 py-3 text-sm text-muted-foreground hover:text-foreground">Annuler</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProductForm;
