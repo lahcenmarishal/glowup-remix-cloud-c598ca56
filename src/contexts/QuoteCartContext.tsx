@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { toast } from "sonner";
 
 export interface QuoteItem {
   id: string;
@@ -21,6 +22,37 @@ interface QuoteCartContextType {
 
 const QuoteCartContext = createContext<QuoteCartContextType | null>(null);
 
+const QUOTE_CART_STORAGE_KEY = "impulse-quote-cart";
+
+const isQuoteItem = (value: unknown): value is QuoteItem => {
+  if (!value || typeof value !== "object") return false;
+
+  const item = value as Partial<QuoteItem>;
+
+  return (
+    typeof item.id === "string" &&
+    typeof item.name === "string" &&
+    typeof item.category === "string" &&
+    (typeof item.image_url === "string" || item.image_url === null) &&
+    typeof item.quantity === "number" &&
+    item.quantity > 0
+  );
+};
+
+const readStoredItems = (): QuoteItem[] => {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const storedItems = window.localStorage.getItem(QUOTE_CART_STORAGE_KEY);
+    if (!storedItems) return [];
+
+    const parsedItems = JSON.parse(storedItems);
+    return Array.isArray(parsedItems) ? parsedItems.filter(isQuoteItem) : [];
+  } catch {
+    return [];
+  }
+};
+
 export const useQuoteCart = () => {
   const ctx = useContext(QuoteCartContext);
   if (!ctx) throw new Error("useQuoteCart must be used within QuoteCartProvider");
@@ -28,17 +60,33 @@ export const useQuoteCart = () => {
 };
 
 export const QuoteCartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<QuoteItem[]>([]);
+  const [items, setItems] = useState<QuoteItem[]>(readStoredItems);
   const [isOpen, setIsOpen] = useState(false);
 
   const addItem = useCallback((product: Omit<QuoteItem, "quantity">) => {
+    const alreadyInCart = items.some((item) => item.id === product.id);
+
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id);
       if (existing) return prev.map((i) => (i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i));
       return [...prev, { ...product, quantity: 1 }];
     });
     setIsOpen(true);
-  }, []);
+    toast.success(alreadyInCart ? "Quantité mise à jour dans le devis" : "Produit ajouté au devis", {
+      description: product.name,
+    });
+  }, [items]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (items.length === 0) {
+      window.localStorage.removeItem(QUOTE_CART_STORAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(QUOTE_CART_STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   const removeItem = useCallback((id: string) => {
     setItems((prev) => prev.filter((i) => i.id !== id));
