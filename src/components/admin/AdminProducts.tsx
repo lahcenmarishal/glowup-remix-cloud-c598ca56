@@ -1,0 +1,118 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+import ProductForm from "./ProductForm";
+
+const AdminProducts = () => {
+  const qc = useQueryClient();
+  const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [showForm, setShowForm] = useState(false);
+
+  const { data: products, isLoading } = useQuery({
+    queryKey: ["admin-products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("sort_order")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const togglePublish = useMutation({
+    mutationFn: async ({ id, is_published }: { id: string; is_published: boolean }) => {
+      const { error } = await supabase.from("products").update({ is_published }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      toast.success("Statut mis à jour");
+    },
+  });
+
+  const deleteProduct = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("products").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      toast.success("Produit supprimé");
+    },
+  });
+
+  const openEdit = (product: any) => {
+    setEditingProduct(product);
+    setShowForm(true);
+  };
+
+  const openNew = () => {
+    setEditingProduct(null);
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingProduct(null);
+  };
+
+  if (showForm) {
+    return <ProductForm product={editingProduct} onClose={closeForm} />;
+  }
+
+  return (
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="font-display text-2xl font-bold text-foreground">Produits</h1>
+        <button
+          onClick={openNew}
+          className="flex items-center gap-2 rounded-sm bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90"
+        >
+          <Plus className="h-4 w-4" /> Ajouter
+        </button>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Chargement...</p>
+      ) : !products?.length ? (
+        <p className="text-sm text-muted-foreground">Aucun produit. Cliquez sur "Ajouter" pour commencer.</p>
+      ) : (
+        <div className="space-y-2">
+          {products.map((p) => (
+            <div key={p.id} className="flex items-center gap-4 rounded-sm border border-border bg-card p-4">
+              {p.image_url ? (
+                <img src={p.image_url} alt={p.name} className="h-14 w-14 rounded-sm object-cover" />
+              ) : (
+                <div className="flex h-14 w-14 items-center justify-center rounded-sm bg-secondary text-xs text-muted-foreground">—</div>
+              )}
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-foreground">{p.name}</h3>
+                <p className="text-xs text-muted-foreground">{p.category}</p>
+              </div>
+              <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${p.is_published ? "bg-green-500/20 text-green-400" : "bg-muted text-muted-foreground"}`}>
+                {p.is_published ? "Publié" : "Brouillon"}
+              </span>
+              <div className="flex gap-1">
+                <button onClick={() => togglePublish.mutate({ id: p.id, is_published: !p.is_published })} className="rounded-sm p-2 text-muted-foreground hover:bg-secondary hover:text-foreground" title={p.is_published ? "Dépublier" : "Publier"}>
+                  {p.is_published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+                <button onClick={() => openEdit(p)} className="rounded-sm p-2 text-muted-foreground hover:bg-secondary hover:text-foreground">
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button onClick={() => { if (confirm("Supprimer ce produit ?")) deleteProduct.mutate(p.id); }} className="rounded-sm p-2 text-muted-foreground hover:bg-secondary hover:text-destructive">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AdminProducts;
