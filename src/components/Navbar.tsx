@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, X, FileText, ChevronDown, Search } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuoteCart } from "@/contexts/QuoteCartContext";
@@ -80,7 +80,6 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { itemCount, setIsOpen } = useQuoteCart();
-  const navigate = useNavigate();
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const toggleMobile = (key: string) => setMobileExpanded(mobileExpanded === key ? null : key);
@@ -168,14 +167,21 @@ const Navbar = () => {
             )}
           </div>
           <button onClick={() => setIsOpen(true)} className="relative flex items-center gap-2 rounded-sm bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90">
-            <FileText className="h-4 w-4" /> Devis
+            <FileText className="h-4 w-4" /> Voir le devis
             {itemCount > 0 && <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">{itemCount}</span>}
           </button>
         </div>
 
-        <button onClick={() => setOpen(!open)} className="justify-self-end p-2 text-background lg:hidden">
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 justify-self-end lg:hidden">
+          <button onClick={() => setIsOpen(true)} className="relative flex items-center gap-2 rounded-sm bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90">
+            <FileText className="h-4 w-4" />
+            <span className="hidden sm:inline">Devis</span>
+            {itemCount > 0 && <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">{itemCount}</span>}
+          </button>
+          <button onClick={() => setOpen(!open)} className="p-2 text-background">
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -207,14 +213,10 @@ const Navbar = () => {
             <a href="/realisations" onClick={() => setOpen(false)} className="block py-2 text-sm font-semibold text-background/80 uppercase">Réalisations</a>
             <a href="/contact" onClick={() => setOpen(false)} className="block py-2 text-sm font-semibold text-background/80 uppercase">Contact</a>
           </div>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4">
             <form onSubmit={handleSearch} className="flex-1">
               <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Rechercher..." className="w-full rounded-sm border border-background/20 bg-background/10 px-3 py-2 text-sm text-background placeholder:text-background/50 focus:outline-none" />
             </form>
-            <button onClick={() => setIsOpen(true)} className="relative flex items-center gap-2 rounded-sm border border-background/20 bg-background/10 px-3 py-2 text-sm font-semibold text-background">
-              <FileText className="h-4 w-4" />
-              {itemCount > 0 && <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">{itemCount}</span>}
-            </button>
           </div>
         </div>
       )}
