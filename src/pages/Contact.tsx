@@ -11,9 +11,8 @@ const ContactPage = () => {
         <img src={contactHero} alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-foreground/70" />
         <div className="relative z-10 text-center px-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">Contact</p>
           <h1 className="font-display text-4xl font-bold text-background md:text-5xl">Parlons de votre projet</h1>
-          <p className="mx-auto mt-4 max-w-lg text-sm text-background/70">Nos experts vous accompagnent dans le choix de vos équipements professionnels et résidentiels.</p>
+          <p className="mx-auto mt-4 max-w-xl text-base text-background/80 md:text-lg">Nos experts vous accompagnent pour transformer vos idées en réalité</p>
         </div>
       </div>
       <ContactSection />

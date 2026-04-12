@@ -53,7 +53,7 @@ const ContactSection = () => {
         <div className="mb-12 text-center">
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">Contactez-nous</p>
           <h2 className="mb-4 font-display text-3xl font-bold text-foreground md:text-4xl">Parlons de votre projet</h2>
-          <p className="mx-auto max-w-xl text-sm leading-relaxed text-muted-foreground">Nos experts vous accompagnent dans le choix de vos équipements professionnels. Demandez une consultation gratuite et personnalisée.</p>
+          <p className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">Contactez nous pour une consultation personnalisée ou planifiez votre visite au showroom.</p>
         </div>
 
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-5">
