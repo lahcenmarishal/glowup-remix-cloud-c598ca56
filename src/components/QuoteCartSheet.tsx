@@ -13,7 +13,7 @@ const QuoteCartSheet = () => {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent side="top" className="flex w-full flex-col sm:absolute sm:right-0 sm:left-auto sm:w-[420px] sm:max-w-md sm:rounded-b-lg max-h-[80vh]">
+      <SheetContent side="right" className="flex w-full max-w-[420px] flex-col">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 font-display">
             <FileText className="h-5 w-5 text-accent" /> Mon Devis ({itemCount})
@@ -53,7 +53,7 @@ const QuoteCartSheet = () => {
               </div>
             </div>
             <div className="border-t border-border pt-4">
-          <Button onClick={handleValidate} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+              <Button onClick={handleValidate} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
                 <FileText className="h-4 w-4 mr-2" /> Voir le devis
               </Button>
             </div>
