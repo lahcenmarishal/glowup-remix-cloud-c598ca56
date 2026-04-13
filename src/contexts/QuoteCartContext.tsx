@@ -71,10 +71,11 @@ export const QuoteCartProvider = ({ children }: { children: ReactNode }) => {
       if (existing) return prev.map((i) => (i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i));
       return [...prev, { ...product, quantity: 1 }];
     });
-    setIsOpen(true);
     toast.success(alreadyInCart ? "Quantité mise à jour dans le devis" : "Produit ajouté au devis", {
       description: product.name,
+      duration: 2500,
     });
+    setIsOpen(true);
   }, [items]);
 
   useEffect(() => {
