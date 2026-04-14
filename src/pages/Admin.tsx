@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import { LogOut, Package, MessageSquare, Settings, ArrowLeft, Image, Briefcase, FolderOpen, LayoutGrid } from "lucide-react";
+import { LogOut, Package, MessageSquare, Settings, ArrowLeft, Image, Briefcase, FolderOpen, LayoutGrid, Info } from "lucide-react";
 import AdminProducts from "@/components/admin/AdminProducts";
 import AdminContacts from "@/components/admin/AdminContacts";
 import AdminContactSettings from "@/components/admin/AdminContactSettings";
@@ -8,6 +8,7 @@ import AdminHeroSlides from "@/components/admin/AdminHeroSlides";
 import AdminConsulting from "@/components/admin/AdminConsulting";
 import AdminRealisations from "@/components/admin/AdminRealisations";
 import AdminCategoryCards from "@/components/admin/AdminCategoryCards";
+import AdminAbout from "@/components/admin/AdminAbout";
 import logo from "@/assets/logo-new.png";
 
 const tabs = [
@@ -16,6 +17,7 @@ const tabs = [
   { id: "categories", label: "Catégories", icon: LayoutGrid },
   { id: "consulting", label: "Consulting", icon: Briefcase },
   { id: "realisations", label: "Réalisations", icon: FolderOpen },
+  { id: "about", label: "À propos", icon: Info },
   { id: "contacts", label: "Demandes", icon: MessageSquare },
   { id: "settings", label: "Coordonnées", icon: Settings },
 ] as const;
@@ -63,6 +65,7 @@ const AdminPage = () => {
         {activeTab === "categories" && <AdminCategoryCards />}
         {activeTab === "consulting" && <AdminConsulting />}
         {activeTab === "realisations" && <AdminRealisations />}
+        {activeTab === "about" && <AdminAbout />}
         {activeTab === "contacts" && <AdminContacts />}
         {activeTab === "settings" && <AdminContactSettings />}
       </main>

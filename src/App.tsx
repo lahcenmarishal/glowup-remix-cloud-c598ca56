@@ -42,9 +42,7 @@ const App = () => (
               <Route path="/residentiel/:category" element={<ResidentielPage />} />
               <Route path="/residentiel/:category/:subcategory" element={<ResidentielPage />} />
               <Route path="/consulting" element={<ConsultingPage />} />
-              <Route path="/consulting/:service" element={<ConsultingPage />} />
               <Route path="/realisations" element={<RealisationsPage />} />
-              <Route path="/realisations/:type" element={<RealisationsPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/produit/:id" element={<ProductDetailPage />} />
               <Route path="/devis" element={<DevisPage />} />
