@@ -19,7 +19,7 @@ import DevisPage from "./pages/Devis";
 import RecherchePage from "./pages/Recherche";
 import LoginPage from "./pages/Login";
 import AdminPage from "./pages/Admin";
-import AProposPage from "./pages/APropos";
+
 
 const queryClient = new QueryClient();
 
@@ -49,7 +49,7 @@ const App = () => (
               <Route path="/recherche" element={<RecherchePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/admin" element={<AdminPage />} />
-              <Route path="/a-propos" element={<AProposPage />} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -26,29 +26,23 @@ const sectionLabels: Record<string, string> = {
 const AdminAbout = () => {
   const qc = useQueryClient();
   const [editSections, setEditSections] = useState<Section[]>([]);
+  const [initialized, setInitialized] = useState(false);
 
-  const { isLoading } = useQuery({
+  const { data: sections, isLoading } = useQuery({
     queryKey: ["admin-about"],
     queryFn: async () => {
       const { data, error } = await supabase.from("about_sections").select("*").order("sort_order");
       if (error) throw error;
-      return data || [];
+      return (data || []) as Section[];
     },
-    meta: { onSuccess: undefined },
-    refetchOnWindowFocus: false,
   });
 
-  // Separate query success handler
-  const { data: rawSections } = useQuery({
-    queryKey: ["admin-about"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("about_sections").select("*").order("sort_order");
-      if (error) throw error;
-      const sections = (data || []) as Section[];
-      if (editSections.length === 0) setEditSections(sections);
-      return sections;
-    },
-  });
+  useEffect(() => {
+    if (sections && sections.length > 0 && !initialized) {
+      setEditSections(sections);
+      setInitialized(true);
+    }
+  }, [sections, initialized]);
 
   const updateField = (index: number, field: keyof Section, value: any) => {
     setEditSections((prev) => prev.map((s, i) => (i === index ? { ...s, [field]: value } : s)));
@@ -67,6 +61,7 @@ const AdminAbout = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-about"] });
       qc.invalidateQueries({ queryKey: ["about-sections"] });
+      setInitialized(false);
       toast.success("Sections sauvegardées");
     },
     onError: () => toast.error("Erreur lors de la sauvegarde"),
@@ -83,28 +78,32 @@ const AdminAbout = () => {
         </button>
       </div>
 
-      <div className="space-y-4">
-        {editSections.map((section, i) => (
-          <div key={section.id} className="rounded-sm border border-border bg-card p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-foreground">{sectionLabels[section.key] || section.key}</h3>
-              <button onClick={() => updateField(i, "is_active", !section.is_active)} className="rounded-sm p-1.5 text-muted-foreground hover:bg-secondary" title={section.is_active ? "Désactiver" : "Activer"}>
-                {section.is_active ? <Eye className="h-4 w-4 text-green-400" /> : <EyeOff className="h-4 w-4" />}
-              </button>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Titre</label>
-                <input value={section.title} onChange={(e) => updateField(i, "title", e.target.value)} className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground" />
+      {editSections.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Aucune section trouvée.</p>
+      ) : (
+        <div className="space-y-4">
+          {editSections.map((section, i) => (
+            <div key={section.id} className="rounded-sm border border-border bg-card p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-foreground">{sectionLabels[section.key] || section.key}</h3>
+                <button onClick={() => updateField(i, "is_active", !section.is_active)} className="rounded-sm p-1.5 text-muted-foreground hover:bg-secondary" title={section.is_active ? "Désactiver" : "Activer"}>
+                  {section.is_active ? <Eye className="h-4 w-4 text-green-400" /> : <EyeOff className="h-4 w-4" />}
+                </button>
               </div>
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Contenu</label>
-                <textarea value={section.content} onChange={(e) => updateField(i, "content", e.target.value)} rows={section.key.includes("cards") || section.key === "pillars" || section.key === "why_choose" ? 8 : 3} className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground font-mono" />
+              <div className="space-y-3">
+                <div>
+                  <label className="mb-1 block text-xs text-muted-foreground">Titre</label>
+                  <input value={section.title} onChange={(e) => updateField(i, "title", e.target.value)} className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-muted-foreground">Contenu</label>
+                  <textarea value={section.content} onChange={(e) => updateField(i, "content", e.target.value)} rows={section.key.includes("cards") || section.key === "pillars" || section.key === "why_choose" ? 8 : 3} className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground font-mono" />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
