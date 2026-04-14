@@ -140,7 +140,6 @@ const Navbar = () => {
           </MegaMenu>
           <a href="/consulting" className="text-sm font-semibold text-background/70 uppercase tracking-wide transition-colors hover:text-background">Consulting</a>
           <a href="/realisations" className="text-sm font-semibold text-background/70 uppercase tracking-wide transition-colors hover:text-background">Réalisations</a>
-          <a href="/#about" className="text-sm font-semibold text-background/70 uppercase tracking-wide transition-colors hover:text-background">À propos</a>
           <a href="/contact" className="text-sm font-semibold text-background/70 uppercase tracking-wide transition-colors hover:text-background">Contactez-nous</a>
         </div>
 
@@ -212,7 +211,6 @@ const Navbar = () => {
             )}
             <a href="/consulting" onClick={() => setOpen(false)} className="block py-2 text-sm font-semibold text-background/80 uppercase">Consulting</a>
             <a href="/realisations" onClick={() => setOpen(false)} className="block py-2 text-sm font-semibold text-background/80 uppercase">Réalisations</a>
-            <a href="/#about" onClick={() => setOpen(false)} className="block py-2 text-sm font-semibold text-background/80 uppercase">À propos</a>
             <a href="/contact" onClick={() => setOpen(false)} className="block py-2 text-sm font-semibold text-background/80 uppercase">Contact</a>
           </div>
           <div className="mt-4">
