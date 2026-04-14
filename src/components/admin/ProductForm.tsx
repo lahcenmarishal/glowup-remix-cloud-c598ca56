@@ -175,6 +175,7 @@ const ProductForm = ({ product, onClose }: { product: any | null; onClose: () =>
       }
 
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      localStorage.removeItem(DRAFT_KEY);
       toast.success(isEditing ? "Produit mis à jour" : "Produit créé");
       onClose();
     } catch (err: any) {
