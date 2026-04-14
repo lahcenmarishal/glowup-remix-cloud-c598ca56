@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Upload, X, Plus, Trash2 } from "lucide-react";
@@ -21,17 +21,29 @@ const subcategories: Record<string, string[]> = {
   Fonctionnel: ["HIIT Cardio", "Cages & Rigs"],
 };
 
+const DRAFT_KEY = "product-form-draft";
+
+const loadDraft = () => {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+};
+
 const ProductForm = ({ product, onClose }: { product: any | null; onClose: () => void }) => {
   const qc = useQueryClient();
   const isEditing = !!product;
+  const draft = !isEditing ? loadDraft() : null;
 
-  const [name, setName] = useState(product?.name || "");
-  const [category, setCategory] = useState(product?.category || "Cardio");
-  const [usageType, setUsageType] = useState(product?.usage_type || "both");
-  const [subcategory, setSubcategory] = useState(product?.subcategory || "");
-  const [shortDesc, setShortDesc] = useState(product?.short_description || "");
-  const [description, setDescription] = useState(product?.description || "");
+  const [name, setName] = useState(product?.name || draft?.name || "");
+  const [category, setCategory] = useState(product?.category || draft?.category || "Cardio");
+  const [usageType, setUsageType] = useState(product?.usage_type || draft?.usageType || "both");
+  const [subcategory, setSubcategory] = useState(product?.subcategory || draft?.subcategory || "");
+  const [shortDesc, setShortDesc] = useState(product?.short_description || draft?.shortDesc || "");
+  const [description, setDescription] = useState(product?.description || draft?.description || "");
   const [warrantyItems, setWarrantyItems] = useState<WarrantyItem[]>(() => {
+    if (draft?.warrantyItems && !isEditing) return draft.warrantyItems;
     const w = product?.warranty;
     if (!w) return [];
     try {
@@ -43,22 +55,34 @@ const ProductForm = ({ product, onClose }: { product: any | null; onClose: () =>
         }));
       }
     } catch {}
-    // Legacy: parse "Composant: Durée" lines
     return w.split("\n").filter((l: string) => l.trim()).map((line: string) => {
       const parts = line.split(":");
       return { component: parts[0]?.trim() || "", duration: parts.slice(1).join(":").trim() || line.trim() };
     });
   });
-  const [specs, setSpecs] = useState<Spec[]>((product?.specs as Spec[]) || []);
-  const [features, setFeatures] = useState<string[]>((product?.features as string[]) || []);
-  const [imageUrl, setImageUrl] = useState(product?.image_url || "");
-  const [hoverImageUrl, setHoverImageUrl] = useState(product?.hover_image_url || "");
+  const [specs, setSpecs] = useState<Spec[]>((product?.specs as Spec[]) || draft?.specs || []);
+  const [features, setFeatures] = useState<string[]>((product?.features as string[]) || draft?.features || []);
+  const [imageUrl, setImageUrl] = useState(product?.image_url || draft?.imageUrl || "");
+  const [hoverImageUrl, setHoverImageUrl] = useState(product?.hover_image_url || draft?.hoverImageUrl || "");
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
-  const [isTrending, setIsTrending] = useState(product?.is_trending || false);
-  const [isPublished, setIsPublished] = useState(product?.is_published ?? false);
-  const [sortOrder, setSortOrder] = useState(product?.sort_order || 0);
+  const [isTrending, setIsTrending] = useState(product?.is_trending || draft?.isTrending || false);
+  const [isPublished, setIsPublished] = useState(product?.is_published ?? draft?.isPublished ?? false);
+  const [sortOrder, setSortOrder] = useState(product?.sort_order || draft?.sortOrder || 0);
   const [saving, setSaving] = useState(false);
   const [loadingGallery, setLoadingGallery] = useState(isEditing);
+
+  // Auto-save draft for new products
+  useEffect(() => {
+    if (isEditing) return;
+    const timer = setTimeout(() => {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        name, category, usageType, subcategory, shortDesc, description,
+        warrantyItems, specs, features, imageUrl, hoverImageUrl,
+        isTrending, isPublished, sortOrder,
+      }));
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [isEditing, name, category, usageType, subcategory, shortDesc, description, warrantyItems, specs, features, imageUrl, hoverImageUrl, isTrending, isPublished, sortOrder]);
 
   const mainImageRef = useRef<HTMLInputElement>(null);
   const hoverImageRef = useRef<HTMLInputElement>(null);
@@ -151,6 +175,7 @@ const ProductForm = ({ product, onClose }: { product: any | null; onClose: () =>
       }
 
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      localStorage.removeItem(DRAFT_KEY);
       toast.success(isEditing ? "Produit mis à jour" : "Produit créé");
       onClose();
     } catch (err: any) {

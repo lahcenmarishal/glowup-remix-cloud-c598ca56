@@ -33,7 +33,7 @@ const AboutImpulseSection = () => {
   const whyMarocItems = whyMarocCards ? parseJson(whyMarocCards.content) : [];
 
   return (
-    <section className="border-t border-border bg-card py-20">
+    <section id="about" className="border-t border-border bg-card py-20">
       <div className="container mx-auto px-6 md:px-16">
         {intro && (
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
