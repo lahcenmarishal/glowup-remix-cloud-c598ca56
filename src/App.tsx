@@ -19,7 +19,7 @@ import DevisPage from "./pages/Devis";
 import RecherchePage from "./pages/Recherche";
 import LoginPage from "./pages/Login";
 import AdminPage from "./pages/Admin";
-
+import AProposPage from "./pages/APropos";
 
 const queryClient = new QueryClient();
 
@@ -42,14 +42,16 @@ const App = () => (
               <Route path="/residentiel/:category" element={<ResidentielPage />} />
               <Route path="/residentiel/:category/:subcategory" element={<ResidentielPage />} />
               <Route path="/consulting" element={<ConsultingPage />} />
+              <Route path="/consulting/:service" element={<ConsultingPage />} />
               <Route path="/realisations" element={<RealisationsPage />} />
+              <Route path="/realisations/:type" element={<RealisationsPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/produit/:id" element={<ProductDetailPage />} />
               <Route path="/devis" element={<DevisPage />} />
               <Route path="/recherche" element={<RecherchePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/admin" element={<AdminPage />} />
-              
+              <Route path="/a-propos" element={<AProposPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
