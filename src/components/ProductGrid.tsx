@@ -64,7 +64,7 @@ const ProductGrid = ({ defaultCategory, defaultSubcategory, defaultUsageType, ti
                     <div className="relative aspect-square overflow-hidden">
                       <img src={p.image_url || ""} alt={p.name} className="h-full w-full object-cover transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 group-hover:opacity-0" />
                       {p.hover_image_url && <img src={p.hover_image_url} alt={`${p.name} détail`} className="absolute inset-0 h-full w-full object-cover opacity-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100" style={{ transform: "scale(1.1)" }} />}
-                      <div className="absolute left-3 top-3 rounded-sm bg-background/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground backdrop-blur-sm">{p.category}</div>
+                      
                     </div>
                   </a>
                   <div className="p-2 sm:p-4">
