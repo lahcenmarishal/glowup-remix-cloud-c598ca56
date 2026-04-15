@@ -36,7 +36,7 @@ const ConsultingPage = () => {
                           <img src={s.image_url || "/placeholder.svg"} alt={s.title} className="h-full w-full object-cover" />
                         </div>
                         <div className="bg-[#1a1a1a] px-6 py-8">
-                          <h2 className="mb-3 font-display text-xl font-bold leading-tight text-background">{s.title}</h2>
+                          <h2 className="mb-3 font-display text-lg font-bold leading-tight text-background">{s.title}</h2>
                           <p className="text-sm leading-relaxed text-background/70">{s.description}</p>
                           <a href="/contact" className="mt-6 inline-block text-sm font-semibold text-red-600 underline underline-offset-4 transition-colors hover:text-red-700">Contactez-nous pour une consultation personnalisée</a>
                         </div>
