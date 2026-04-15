@@ -36,7 +36,7 @@ const ConsultingPage = () => {
                           <img src={s.image_url || "/placeholder.svg"} alt={s.title} className="h-full w-full object-cover" />
                         </div>
                         <div className="bg-[#1a1a1a] px-6 py-8">
-                          <h2 className="mb-3 font-display text-lg md:text-xl font-bold leading-tight text-background">
+                          <h2 className="mb-3 font-display text-[1.15rem] md:text-[1.25rem] font-bold leading-tight text-background">
     {s.title}
   </h2>
 
@@ -57,7 +57,7 @@ const ConsultingPage = () => {
                           <>
                             <div className="relative overflow-hidden"><img src={s.image_url || "/placeholder.svg"} alt={s.title} className="h-full w-full object-cover" /></div>
                             <div className="flex flex-col justify-center bg-[#1a1a1a] px-12 py-16 lg:px-20">
-                              <h2 className="mb-3 font-display text-lg md:text-xl font-bold leading-tight text-background">
+                              <h2 className="mb-3 font-display text-[1.15rem] md:text-[1.25rem] font-bold leading-tight text-background">
     {s.title}
   </h2>
 
@@ -76,7 +76,7 @@ const ConsultingPage = () => {
                         ) : (
                           <>
                             <div className="flex flex-col justify-center bg-[#1a1a1a] px-12 py-16 lg:px-20">
-                              <h2 className="mb-3 font-display text-lg md:text-xl font-bold leading-tight text-background">
+                              <h2 className="mb-3 font-display text-[1.15rem] md:text-[1.25rem] font-bold leading-tight text-background">
     {s.title}
   </h2>
 
