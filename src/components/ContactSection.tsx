@@ -106,7 +106,7 @@ const ContactSection = () => {
               </div>
               <button type="submit" disabled={sending} className="flex items-center justify-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90 disabled:opacity-50 md:col-span-2">
                 <Send className="h-4 w-4" />
-                {sending ? "Envoi en cours..." : "Envoyer la demande"}
+                {sending ? "Envoi en cours..." : "Envoyer"}
               </button>
             </form>
           </div>
