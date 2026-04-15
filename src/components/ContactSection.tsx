@@ -51,7 +51,7 @@ const ContactSection = () => {
     <section id="contact" className="bg-background py-16 md:py-24">
       <div className="container mx-auto px-6 md:px-16">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 font-display text-3xl font-bold text-foreground md:text-2xl">Contactez nous pour une consultation personnalisée ou planifiez votre visite au showroom.</h2>
+          <h2 className="mb-4 font-display text-3xl font-bold text-foreground md:text-xl">Contactez nous pour une consultation personnalisée ou planifiez votre visite au showroom.</h2>
         </div>
 
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-5">
