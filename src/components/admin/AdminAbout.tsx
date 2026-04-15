@@ -26,7 +26,6 @@ const sectionLabels: Record<string, string> = {
 const AdminAbout = () => {
   const qc = useQueryClient();
   const [editSections, setEditSections] = useState<Section[]>([]);
-  const [initialized, setInitialized] = useState(false);
 
   const { data: sections, isLoading } = useQuery({
     queryKey: ["admin-about"],
