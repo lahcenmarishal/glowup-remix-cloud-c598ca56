@@ -38,7 +38,7 @@ const ConsultingPage = () => {
                         <div className="bg-[#1a1a1a] px-6 py-8">
                           <h2 className="mb-3 font-display text-xl font-bold leading-tight text-background">{s.title}</h2>
                           <p className="text-sm leading-relaxed text-background/70">{s.description}</p>
-                          <a href="/contact" className="mt-5 inline-block rounded-sm bg-accent px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-accent-foreground transition-colors hover:bg-accent/90">Contactez-nous pour une consultation personnalisée</a>
+                          <a href="/contact" className="mt-6 inline-block text-sm font-semibold text-red-600 underline underline-offset-4 transition-colors hover:text-red-700">Contactez-nous pour une consultation personnalisée</a>
                         </div>
                       </div>
                       <div className="hidden md:grid md:grid-cols-2" style={{ minHeight: "500px" }}>
@@ -48,7 +48,7 @@ const ConsultingPage = () => {
                             <div className="flex flex-col justify-center bg-[#1a1a1a] px-12 py-16 lg:px-20">
                               <h2 className="mb-5 font-display text-3xl font-bold leading-tight text-background lg:text-4xl xl:text-5xl">{s.title}</h2>
                               <p className="max-w-lg text-sm leading-relaxed text-background/70 lg:text-base">{s.description}</p>
-                              <a href="/contact" className="mt-6 inline-block w-fit rounded-sm bg-accent px-6 py-3 text-xs font-bold uppercase tracking-wide text-accent-foreground transition-colors hover:bg-accent/90">Contactez-nous pour une consultation personnalisée</a>
+                              <a href="/contact" className="mt-6 inline-block text-sm font-semibold text-red-600 underline underline-offset-4 transition-colors hover:text-red-700">Contactez-nous pour une consultation personnalisée</a>
                             </div>
                           </>
                         ) : (
@@ -56,7 +56,7 @@ const ConsultingPage = () => {
                             <div className="flex flex-col justify-center bg-[#1a1a1a] px-12 py-16 lg:px-20">
                               <h2 className="mb-5 font-display text-3xl font-bold leading-tight text-background lg:text-4xl xl:text-5xl">{s.title}</h2>
                               <p className="max-w-lg text-sm leading-relaxed text-background/70 lg:text-base">{s.description}</p>
-                              <a href="/contact" className="mt-6 inline-block w-fit rounded-sm bg-accent px-6 py-3 text-xs font-bold uppercase tracking-wide text-accent-foreground transition-colors hover:bg-accent/90">Contactez-nous pour une consultation personnalisée</a>
+                              <a href="/contact" className="mt-6 inline-block text-sm font-semibold text-red-600 underline underline-offset-4 transition-colors hover:text-red-700">Contactez-nous pour une consultation personnalisée</a>
                             </div>
                             <div className="relative overflow-hidden"><img src={s.image_url || "/placeholder.svg"} alt={s.title} className="h-full w-full object-cover" /></div>
                           </>
