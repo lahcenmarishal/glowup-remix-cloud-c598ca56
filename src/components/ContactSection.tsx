@@ -51,7 +51,7 @@ const ContactSection = () => {
     <section id="contact" className="bg-background py-16 md:py-24">
       <div className="container mx-auto px-6 md:px-16">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 font-display text-3xl font-bold text-foreground md:text-4xl">Contactez nous pour une consultation personnalisée ou planifiez votre visite au showroom.</h2>
+          <h2 className="mb-4 font-display text-3xl font-bold text-foreground md:text-2xl">Contactez nous pour une consultation personnalisée ou planifiez votre visite au showroom.</h2>
         </div>
 
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-5">
@@ -82,8 +82,7 @@ const ContactSection = () => {
           </div>
 
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm md:p-8 lg:col-span-3">
-            <h3 className="mb-1 text-lg font-bold text-foreground">Envoyez-nous un message</h3>
-            <p className="mb-6 text-sm text-muted-foreground">Remplissez le formulaire et nous vous recontacterons dans les 24h.</p>
+            <p className="mb-6 text-sm text-muted-foreground">Remplissez le formulaire et nous vous recontacterons dans les plus brefs délais.</p>
             <form className="grid grid-cols-1 gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-foreground">Nom complet <span className="text-accent">*</span></label>
