@@ -30,7 +30,7 @@ const Footer = () => {
             <Link to="/">
               <img src={logo} alt="IMPULSE FITNESS" className="h-8 w-auto" />
             </Link>
-            <p className="mt-3 max-w-xs text-xs leading-relaxed text-background/50">Équipements de fitness professionnels et résidentiels. Conçus pour l'endurance, forgés pour la performance.</p>
+            <p className="mt-3 max-w-xs text-xs leading-relaxed text-background/50">Votre partenaire de solutions complètes pour transformer vos ambitions sportives en projet reussi.</p>
             {(s.social_instagram || s.social_facebook || s.social_tiktok || s.social_youtube) && (
               <div className="mt-4 flex items-center gap-3">
                 {s.social_instagram && <a href={s.social_instagram} target="_blank" rel="noopener noreferrer" className="text-background/40 transition-colors hover:text-background"><Instagram className="h-5 w-5" /></a>}
