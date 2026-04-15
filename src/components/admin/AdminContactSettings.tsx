@@ -48,11 +48,20 @@ const AdminContactSettings = () => {
     mutationFn: async () => {
       for (const field of fields) {
         const value = form[field.key] || "";
-        const { error } = await supabase
+        // Try update first
+        const { data, error } = await supabase
           .from("contact_settings")
           .update({ value, updated_at: new Date().toISOString() })
-          .eq("key", field.key);
+          .eq("key", field.key)
+          .select();
         if (error) throw error;
+        // If no row was updated, insert it
+        if (!data || data.length === 0) {
+          const { error: insertErr } = await supabase
+            .from("contact_settings")
+            .insert({ key: field.key, value, updated_at: new Date().toISOString() });
+          if (insertErr) throw insertErr;
+        }
       }
     },
     onSuccess: () => {

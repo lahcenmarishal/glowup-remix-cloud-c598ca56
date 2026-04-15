@@ -46,6 +46,7 @@ const Footer = () => {
               <ul className="space-y-2 text-xs text-background/50">
                 <li><a href="/professionnel/cardio" className="hover:text-background">Cardio</a></li>
                 <li><a href="/professionnel/musculation" className="hover:text-background">Musculation</a></li>
+                <li><a href="/professionnel/fonctionnel" className="hover:text-background">Fonctionnel</a></li>
               </ul>
             </div>
             <div>
@@ -53,6 +54,7 @@ const Footer = () => {
               <ul className="space-y-2 text-xs text-background/50">
                 <li><a href="/residentiel/cardio" className="hover:text-background">Cardio</a></li>
                 <li><a href="/residentiel/musculation" className="hover:text-background">Musculation</a></li>
+                <li><a href="/residentiel/fonctionnel" className="hover:text-background">Fonctionnel</a></li>
               </ul>
             </div>
             <div>

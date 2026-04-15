@@ -56,7 +56,7 @@ const MegaMenu = ({ label, children }: MegaMenuProps) => {
         {label} <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2">
+        <div className="absolute left-0 top-full z-50 pt-2">
           <div className="rounded-lg border border-background/10 bg-[#1a1a1a] p-6 shadow-xl min-w-max">{children}</div>
         </div>
       )}

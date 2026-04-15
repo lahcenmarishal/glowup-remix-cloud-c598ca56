@@ -26,7 +26,6 @@ const sectionLabels: Record<string, string> = {
 const AdminAbout = () => {
   const qc = useQueryClient();
   const [editSections, setEditSections] = useState<Section[]>([]);
-  const [initialized, setInitialized] = useState(false);
 
   const { data: sections, isLoading } = useQuery({
     queryKey: ["admin-about"],
@@ -38,11 +37,10 @@ const AdminAbout = () => {
   });
 
   useEffect(() => {
-    if (sections && sections.length > 0 && !initialized) {
+    if (sections && sections.length > 0) {
       setEditSections(sections);
-      setInitialized(true);
     }
-  }, [sections, initialized]);
+  }, [sections]);
 
   const updateField = (index: number, field: keyof Section, value: any) => {
     setEditSections((prev) => prev.map((s, i) => (i === index ? { ...s, [field]: value } : s)));
@@ -61,7 +59,6 @@ const AdminAbout = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-about"] });
       qc.invalidateQueries({ queryKey: ["about-sections"] });
-      setInitialized(false);
       toast.success("Sections sauvegardées");
     },
     onError: () => toast.error("Erreur lors de la sauvegarde"),
