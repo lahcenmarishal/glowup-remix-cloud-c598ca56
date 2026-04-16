@@ -29,8 +29,8 @@ const ProductDetailPage = () => {
 
   const nextImage = useCallback(() => setActiveImage((p) => (p + 1) % allImages.length), [allImages.length]);
   const prevImage = useCallback(() => setActiveImage((p) => (p - 1 + allImages.length) % allImages.length), [allImages.length]);
-  const handleMouseMove = useCallback((e: React.MouseEvent) => { if (!imageRef.current) return; const rect = imageRef.current.getBoundingClientRect(); setZoomOrigin({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 }); setZoomLevel(2.5); }, []);
-  const handleMouseLeave = useCallback(() => { setZoomLevel(1); setZoomOrigin({ x: 50, y: 50 }); }, []);
+  const handleMouseMove = useCallback((_e: React.MouseEvent) => {}, []);
+  const handleMouseLeave = useCallback(() => {}, []);
 
   useEffect(() => { if (!lightboxOpen) return; const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setLightboxOpen(false); if (e.key === "ArrowRight") nextImage(); if (e.key === "ArrowLeft") prevImage(); }; window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler); }, [lightboxOpen, nextImage, prevImage]);
 
@@ -46,8 +46,8 @@ const ProductDetailPage = () => {
     <div className="container mx-auto px-4 py-4 md:px-16 md:py-6"><a href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" /> Retour au catalogue</a></div>
     <section className="container mx-auto px-4 md:px-16"><div className="grid gap-6 md:gap-8 lg:grid-cols-2">
     <div>
-      <div ref={imageRef} className="relative aspect-square cursor-zoom-in overflow-hidden rounded-sm bg-card" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} onClick={() => { setZoomLevel(1); setLightboxOpen(true); }}>
-        <AnimatePresence mode="wait">{allImages.length > 0 && <motion.img key={activeImage} src={allImages[activeImage].url} alt={allImages[activeImage].alt} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="h-full w-full object-cover transition-transform duration-200" style={{ transform: `scale(${zoomLevel})`, transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%` }} />}</AnimatePresence>
+      <div ref={imageRef} className="relative aspect-square overflow-hidden rounded-sm bg-card" onClick={() => { setLightboxOpen(true); }}>
+        <AnimatePresence mode="wait">{allImages.length > 0 && <motion.img key={activeImage} src={allImages[activeImage].url} alt={allImages[activeImage].alt} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="h-full w-full object-cover" />}</AnimatePresence>
         {allImages.length > 1 && (<><button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 backdrop-blur-sm hover:bg-background"><ChevronLeft className="h-4 w-4 text-foreground" /></button><button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 backdrop-blur-sm hover:bg-background"><ChevronRight className="h-4 w-4 text-foreground" /></button></>)}
       </div>
       {allImages.length > 1 && <div className="mt-2 flex gap-1.5 overflow-x-auto">{allImages.map((img, i) => (<button key={i} onClick={() => setActiveImage(i)} className={`h-12 w-12 flex-shrink-0 overflow-hidden rounded-sm border-2 transition-colors ${i === activeImage ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"}`}><img src={img.url} alt="" className="h-full w-full object-cover" /></button>))}</div>}
