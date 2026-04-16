@@ -31,32 +31,40 @@ const ConsultingPage = () => {
                   {i > 0 && <div className="h-[3px] bg-background" />}
                   <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: i * 0.1 }}>
                     <div className="group">
+                      {/* Mobile */}
                       <div className="flex flex-col md:hidden">
                         <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 10" }}>
                           <img src={s.image_url || "/placeholder.svg"} alt={s.title} className="h-full w-full object-cover" />
                         </div>
                         <div className="bg-[#1a1a1a] px-6 py-8">
-                          <h2 className="mb-3 font-display text-xl font-bold leading-tight text-background">{s.title}</h2>
-                          <p className="text-base leading-relaxed text-background/70">{s.description}</p>
-                          <a href="/contact" className="mt-6 inline-block text-sm font-semibold text-red-600 underline underline-offset-4 transition-colors hover:text-red-700">Contactez-nous pour une consultation personnalisée</a>
+                          <h2 className="mb-4 font-display text-2xl font-bold uppercase leading-tight text-white">{s.title}</h2>
+                          <p className="text-sm leading-relaxed text-white/70">{s.description}</p>
+                          <a href="/contact" className="mt-8 inline-block rounded-sm bg-accent px-6 py-3 text-xs font-bold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90">
+                            Contactez-nous pour une consultation personnalisée
+                          </a>
                         </div>
                       </div>
+                      {/* Desktop */}
                       <div className="hidden md:grid md:grid-cols-2" style={{ minHeight: "500px" }}>
                         {imageFirst ? (
                           <>
                             <div className="relative overflow-hidden"><img src={s.image_url || "/placeholder.svg"} alt={s.title} className="h-full w-full object-cover" /></div>
                             <div className="flex flex-col justify-center bg-[#1a1a1a] px-12 py-16 lg:px-20">
-                              <h2 className="mb-5 font-display text-3xl font-bold leading-tight text-background lg:text-4xl xl:text-5xl">{s.title}</h2>
-                              <p className="max-w-lg text-base leading-relaxed text-background/70 lg:text-base">{s.description}</p>
-                              <a href="/contact" className="mt-6 inline-block text-sm font-semibold text-red-600 underline underline-offset-4 transition-colors hover:text-red-700">Contactez-nous pour une consultation personnalisée</a>
+                              <h2 className="mb-6 font-display text-3xl font-bold uppercase leading-tight text-white lg:text-4xl xl:text-5xl">{s.title}</h2>
+                              <p className="max-w-lg text-sm leading-relaxed text-white/70 lg:text-base">{s.description}</p>
+                              <a href="/contact" className="mt-8 inline-block self-start rounded-sm bg-accent px-6 py-3 text-xs font-bold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90">
+                                Contactez-nous pour une consultation personnalisée
+                              </a>
                             </div>
                           </>
                         ) : (
                           <>
                             <div className="flex flex-col justify-center bg-[#1a1a1a] px-12 py-16 lg:px-20">
-                              <h2 className="mb-5 font-display text-3xl font-bold leading-tight text-background lg:text-4xl xl:text-5xl">{s.title}</h2>
-                              <p className="max-w-lg text-base leading-relaxed text-background/70 lg:text-base">{s.description}</p>
-                              <a href="/contact" className="mt-6 inline-block text-sm font-semibold text-red-600 underline underline-offset-4 transition-colors hover:text-red-700">Contactez-nous pour une consultation personnalisée</a>
+                              <h2 className="mb-6 font-display text-3xl font-bold uppercase leading-tight text-white lg:text-4xl xl:text-5xl">{s.title}</h2>
+                              <p className="max-w-lg text-sm leading-relaxed text-white/70 lg:text-base">{s.description}</p>
+                              <a href="/contact" className="mt-8 inline-block self-start rounded-sm bg-accent px-6 py-3 text-xs font-bold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90">
+                                Contactez-nous pour une consultation personnalisée
+                              </a>
                             </div>
                             <div className="relative overflow-hidden"><img src={s.image_url || "/placeholder.svg"} alt={s.title} className="h-full w-full object-cover" /></div>
                           </>

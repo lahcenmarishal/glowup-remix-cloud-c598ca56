@@ -37,8 +37,8 @@ const AboutImpulseSection = () => {
       <div className="container mx-auto px-6 md:px-16">
       {intro && (
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <div className="mb-8 text-center">
-              <p className="mb-2 text-lg font-semibold uppercase tracking-widest text-accent md:text-xl">À propos de la marque Impulse</p>
+            <div className="mb-8">
+              <p className="mb-2 text-xl font-semibold uppercase tracking-widest text-accent md:text-2xl">À propos de la marque Impulse</p>
             </div>
             {intro.title && <h2 className="mb-6 font-display text-3xl font-bold text-foreground md:text-4xl">{intro.title}</h2>}
             <p className="mb-4 max-w-4xl text-base leading-relaxed text-muted-foreground whitespace-pre-line">{intro.content}</p>

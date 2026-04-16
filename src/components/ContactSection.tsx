@@ -82,7 +82,7 @@ const ContactSection = () => {
           </div>
 
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm md:p-8 lg:col-span-3">
-            <p className="mb-6 text-base font-bold text-muted-foreground">Remplissez le formulaire et nous vous recontacterons dans les plus brefs délais.</p>
+            <p className="mb-6 text-lg font-bold text-foreground">Remplissez le formulaire et nous vous recontacterons dans les plus brefs délais.</p>
             <form className="grid grid-cols-1 gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-foreground">Nom complet <span className="text-accent">*</span></label>

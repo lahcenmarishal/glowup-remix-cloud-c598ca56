@@ -2,8 +2,7 @@ import { useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductGrid from "@/components/ProductGrid";
-
-const categoryTitleMap: Record<string, string> = { cardio: "Cardio", musculation: "Musculation", fonctionnel: "Fonctionnel" };
+import CategoryPage from "@/pages/CategoryPage";
 
 const subcategoryMap: Record<string, string> = {
   "tapis-de-course": "Tapis de course", "elliptiques": "Elliptiques", "climbmills": "Climbmills",
@@ -13,8 +12,17 @@ const subcategoryMap: Record<string, string> = {
   "hiit-cardio": "HIIT Cardio", "cages-rigs": "Cages & Rigs",
 };
 
+const categoryTitleMap: Record<string, string> = { cardio: "Cardio", musculation: "Musculation", fonctionnel: "Fonctionnel" };
+
 const ProfessionnelPage = () => {
   const { category, subcategory } = useParams();
+
+  // If we have a category but no subcategory, show the category page
+  if (category && !subcategory) {
+    return <CategoryPage usageType="professionnel" />;
+  }
+
+  // If we have a subcategory, show the product grid
   const categoryName = category ? categoryTitleMap[category] : undefined;
   const subcategoryName = subcategory ? subcategoryMap[subcategory] : undefined;
   const title = subcategoryName || (categoryName ? `${categoryName} Professionnel` : "Équipements Professionnel");
