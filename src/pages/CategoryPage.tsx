@@ -89,7 +89,7 @@ const CategoryPage = ({ usageType }: Props) => {
 
         {/* Subcategory cards */}
         {subcategories && subcategories.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
             {subcategories.map((sub: any, i: number) => (
               <motion.a
                 key={sub.id}
